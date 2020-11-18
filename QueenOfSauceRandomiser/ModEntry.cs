@@ -1,9 +1,8 @@
 ﻿using StardewModdingAPI;
+using StardewModdingAPI.Events;
 using StardewValley;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QueenOfSauceRandomiser
 {
@@ -23,13 +22,13 @@ namespace QueenOfSauceRandomiser
         }
 
         //At this step, we want to shuffle the recipes as this is when the save is initially created
-        private void GameLoop_SaveCreating(object sender, StardewModdingAPI.Events.SaveCreatingEventArgs e)
+        private void GameLoop_SaveCreating(object sender, SaveCreatingEventArgs e)
         {
             //We need to find out how many QoS recipes there are by loading the file:
             IDictionary<string, string> BaseQoSRecipes = Helper.Content.Load<IDictionary<string, string>>(XNBDataPath, ContentSource.GameContent);
 
             //the format:
-            // "IDNum" : "text data"
+            // "IDNum" : "text data
             ShuffleData = new Dictionary<int, int>();
 
             List<int> AvailableIDs = Enumerable.Range(1, BaseQoSRecipes.Count).ToList();
@@ -48,7 +47,7 @@ namespace QueenOfSauceRandomiser
             Helper.Data.WriteSaveData(OurDataPath, ShuffleData);
         }
 
-        private void GameLoop_SaveLoaded(object sender, StardewModdingAPI.Events.SaveLoadedEventArgs e)
+        private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
             //Load the list of shuffled recipes
             ShuffleData = Helper.Data.ReadSaveData<Dictionary<int, int>>(OurDataPath);
