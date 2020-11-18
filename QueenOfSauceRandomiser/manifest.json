@@ -1,0 +1,10 @@
+{
+  "Name": "Queen of Sauce shuffler",
+  "Author": "Speshkitty",
+  "Version": "1.0.0",
+  "Description": "Randomizes the days you get queen of sauce recipes",
+  "UniqueID": "speshkitty.queenofsauceshuffler",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": [ "Nexus:???" ],
+  "EntryDLL": "QueenOfSauceRandomiser.dll"
+}
