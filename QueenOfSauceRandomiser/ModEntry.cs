@@ -13,12 +13,22 @@ namespace QueenOfSauceRandomiser
         private readonly string OurDataPath = "speshkitty.queenofsauceshuffle";
         private readonly string XNBDataPath = "Data/TV/CookingChannel";
 
-        Dictionary<int, int> ShuffleData = new Dictionary<int, int>();
-        
+        internal static Dictionary<int, int> ShuffleData = new Dictionary<int, int>();
+
+        internal static new IModHelper Helper;
+        internal static new IMonitor Monitor;
+
+
         public override void Entry(IModHelper helper)
         {
-            helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
-            helper.Events.GameLoop.SaveCreating += GameLoop_SaveCreating;
+            Helper = helper;
+            Monitor = base.Monitor;
+            
+            Helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+            Helper.Events.GameLoop.SaveCreating += GameLoop_SaveCreating;
+
+            Helper.Events.Multiplayer.PeerConnected += Multiplayer.PeerConnected;
+            Helper.Events.Multiplayer.ModMessageReceived += Multiplayer.ModMessageReceived;
         }
 
         //At this step, we want to shuffle the recipes as this is when the save is initially created
@@ -49,18 +59,23 @@ namespace QueenOfSauceRandomiser
 
         private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
         {
+            if (!Context.IsMainPlayer)
+            {
+                return;
+            }
+
             //Load the list of shuffled recipes
             ShuffleData = Helper.Data.ReadSaveData<Dictionary<int, int>>(OurDataPath);
         }
 
         public bool CanEdit<T>(IAssetInfo asset) => asset.AssetNameEquals(XNBDataPath) && ShuffleData != null && ShuffleData.Count != 0;
-        
+
         public void Edit<T>(IAssetData asset)
         {
             IDictionary<string, string> BaseData = asset.AsDictionary<string, string>().Data;
             foreach (KeyValuePair<string, string> kvp in new Dictionary<string, string>(BaseData))
             {
-                if(ShuffleData.TryGetValue(int.Parse(kvp.Key), out int NewID))
+                if (ShuffleData.TryGetValue(int.Parse(kvp.Key), out int NewID))
                 {
                     BaseData[NewID.ToString()] = kvp.Value;
                 }
@@ -69,7 +84,6 @@ namespace QueenOfSauceRandomiser
                     BaseData[kvp.Key] = kvp.Value;
                 }
             }
-            
         }
     }
 }
